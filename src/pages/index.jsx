@@ -21,7 +21,7 @@ const S = {
   hero: { 
     minHeight: "100vh", position: "relative", display: "flex", flexDirection: "column", 
     alignItems: "center", justifyContent: "center", textAlign: "center", 
-    padding: "0 24px", overflow: "hidden", background: COLORS.bg
+    padding: "0 24px", overflow: "hidden", background: "transparent"
   },
   glow: {
     position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
@@ -42,17 +42,21 @@ const S = {
     lineHeight: 1.6, margin: "0 0 48px", zIndex: 1, position: "relative"
   },
   cta: {
-    display: "flex", gap: "16px", zIndex: 1, position: "relative"
+    display: "flex", gap: "24px", zIndex: 1, position: "relative",
+    justifyContent: "center", width: "100%", marginTop: "16px"
   },
   primaryBtn: {
-    padding: "18px 40px", borderRadius: "14px", background: "linear-gradient(135deg, #58a6ff, #bc8cff)",
+    padding: "18px 44px", borderRadius: "16px", background: "linear-gradient(135deg, #58a6ff, #bc8cff)",
     color: "#fff", fontWeight: 700, fontSize: "1.1rem", border: "none", cursor: "pointer",
-    transition: "all 0.3s ease", boxShadow: "0 20px 40px rgba(88,166,255,0.25)"
+    transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)", 
+    boxShadow: "0 20px 40px rgba(88,166,255,0.25)",
+    transformStyle: "preserve-3d", perspective: "1000px"
   },
   secondaryBtn: {
-    padding: "18px 40px", borderRadius: "14px", background: "rgba(255,255,255,0.05)",
-    color: "#fff", fontWeight: 600, fontSize: "1.1rem", border: "1px solid #30363d", cursor: "pointer",
-    transition: "all 0.3s ease", backdropFilter: "blur(10px)"
+    padding: "18px 44px", borderRadius: "16px", background: "rgba(255,255,255,0.05)",
+    color: "#fff", fontWeight: 600, fontSize: "1.1rem", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer",
+    transition: "all 0.4s ease", backdropFilter: "blur(12px)",
+    transformStyle: "preserve-3d", perspective: "1000px"
   },
   bentoSection: {
     padding: "100px 24px", maxWidth: "1200px", margin: "0 auto"
@@ -80,14 +84,18 @@ export default function LandingPage() {
 
   return (
     <Layout>
-      <div style={{ background: COLORS.bg, color: COLORS.text, overflowX: "hidden" }}>
+      <>
         
         {/* --- Hero Section --- */}
         <section style={S.hero}>
           <div style={S.glow} />
-          <div style={S.grid} />
           
-          <div style={{ position: "relative", zIndex: 1, top: scrollY * 0.2 }}>
+          <div style={{ 
+            position: "relative", zIndex: 1, top: scrollY * 0.1,
+            transform: `perspective(1000px) rotateX(${scrollY * 0.02}deg)`,
+            transition: "transform 0.1s ease-out",
+            display: "flex", flexDirection: "column", alignItems: "center", width: "100%"
+          }}>
             <div style={{ 
               display: "inline-flex", alignItems: "center", gap: "8px", 
               padding: "8px 20px", borderRadius: "99px", background: "rgba(88,166,255,0.1)", 
@@ -115,16 +123,28 @@ export default function LandingPage() {
               <button 
                 onClick={() => router.push(ROUTES.LOGIN)}
                 style={S.primaryBtn}
-                onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 30px 60px rgba(88,166,255,0.4)"; }}
-                onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 20px 40px rgba(88,166,255,0.25)"; }}
+                onMouseOver={(e) => { 
+                  e.currentTarget.style.transform = "translateZ(30px) translateY(-8px) rotateX(-10deg)"; 
+                  e.currentTarget.style.boxShadow = "0 35px 70px rgba(88,166,255,0.5)"; 
+                }}
+                onMouseOut={(e) => { 
+                  e.currentTarget.style.transform = "translateZ(0) translateY(0) rotateX(0)"; 
+                  e.currentTarget.style.boxShadow = "0 20px 40px rgba(88,166,255,0.25)"; 
+                }}
               >
                 Get Started Now
               </button>
               <button 
                 onClick={() => router.push(ROUTES.DISCOVER)}
                 style={S.secondaryBtn}
-                onMouseOver={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
-                onMouseOut={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                onMouseOver={(e) => { 
+                  e.currentTarget.style.background = "rgba(255,255,255,0.1)"; 
+                  e.currentTarget.style.transform = "translateZ(20px) translateY(-4px)";
+                }}
+                onMouseOut={(e) => { 
+                  e.currentTarget.style.background = "rgba(255,255,255,0.05)"; 
+                  e.currentTarget.style.transform = "translateZ(0) translateY(0)";
+                }}
               >
                 Browse Projects
               </button>
@@ -199,9 +219,9 @@ export default function LandingPage() {
         </section>
 
         <style>{`
-          .landing-bento:hover { border-color: #58a6ff77; transform: scale(1.02); }
+          .landing-bento:hover { border-color: #58a6ff77; transform: translateY(-10px) scale(1.02); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
         `}</style>
-      </div>
+      </>
     </Layout>
   );
 }

@@ -9,7 +9,8 @@ import {
   TimelineIcon, PublicIcon, AssignmentIndIcon, StarIcon,
   CallSplitIcon, GitHubIcon
 } from "@/components";
-import Sidebar from "@/features/layout/Sidebar";
+import { getDeviconUrl } from "@/helper";
+import { LOCAL_STORAGE_KEY, PAGE_ROUTES } from "@/constants/common";
 
 const fmt = (n) => n?.toLocaleString() ?? "0";
 
@@ -30,8 +31,29 @@ export default function ProfileDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    const t = localStorage.getItem("github_token");
-    if (t) setToken(t);
+
+    // 1. Try to extract token from hash (e.g., #token=...)
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    if (hash && hash.includes("token=")) {
+      const extractedToken = hash.split("token=")[1]?.split("&")[0];
+      if (extractedToken) {
+        localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, extractedToken);
+        // Set cookie for middleware access
+        document.cookie = `${LOCAL_STORAGE_KEY.ACCESS_TOKEN}=${extractedToken}; path=/; max-age=31536000; SameSite=Lax`;
+        setToken(extractedToken);
+        // Clean up URL hash
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+    }
+
+    // 2. Fallback to localStorage
+    const t = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+    if (t) {
+      setToken(t);
+      // Ensure cookie is set for middleware on every mount if token exists
+      document.cookie = `${LOCAL_STORAGE_KEY.ACCESS_TOKEN}=${t}; path=/; max-age=31536000; SameSite=Lax`;
+    }
   }, []);
 
   const { data: user } = useSWR(token ? "/github/user" : null, getUserProfileHandler);
@@ -40,15 +62,7 @@ export default function ProfileDashboard() {
   if (!mounted) return null;
 
   if (!token) {
-    return (
-      <div style={{ minHeight: "90vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0d1117" }}>
-        <div style={{ textAlign: "center", padding: "60px", background: "rgba(22, 27, 34, 0.8)", border: "1px solid #30363d", borderRadius: "24px", backdropFilter: "blur(20px)", maxWidth: "450px" }}>
-          <div style={{ marginBottom: "20px" }}><GitHubIcon iconProps={{ sx: { fontSize: 64, color: "#e6edf3" } }} /></div>
-          <h2 style={{ color: "#fff", fontSize: "2rem", fontWeight: 800, marginBottom: "16px" }}>Connect GitHub</h2>
-          <button onClick={() => router.push(ROUTES.LOGIN)} style={{ background: "linear-gradient(135deg, #58a6ff, #388bfd)", color: "#fff", border: "none", padding: "16px 40px", borderRadius: "14px", fontWeight: 700, cursor: "pointer" }}>Sign in with GitHub</button>
-        </div>
-      </div>
-    );
+    return null; // Middleware will handle redirect to /login
   }
 
   const langMap = {};
@@ -57,7 +71,7 @@ export default function ProfileDashboard() {
   const totalLangs = Object.values(langMap).reduce((a, b) => a + b, 0);
 
   return (
-    <div style={{ background: "#0d1117", minHeight: "100vh", color: "#e6edf3", padding: "80px 24px 40px" }}>
+    <>
       <style>{`
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -66,11 +80,8 @@ export default function ProfileDashboard() {
         .lang-bar { height: 8px; border-radius: 4px; overflow: hidden; display: flex; margin-bottom: 20px; background: #21262d; }
       `}</style>
 
-      <div style={{ maxWidth: "1300px", margin: "0 auto", display: "grid", gridTemplateColumns: "84px 1fr", gap: "40px" }}>
-        
-        <Sidebar />
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gridAutoRows: "minmax(140px, auto)", gap: "20px", minWidth: 0 }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, 1fr)", gridAutoRows: "minmax(140px, auto)", gap: "20px", minWidth: 0, width: "100%" }}>
           
           <div className="bento-item" style={{ gridColumn: "span 12", display: "flex", alignItems: "center", gap: "30px", background: "linear-gradient(90deg, rgba(22, 27, 34, 0.8) 0%, rgba(13, 17, 23, 0.8) 100%)" }}>
             {user ? (
@@ -119,7 +130,11 @@ export default function ProfileDashboard() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                   {sortedLangs.slice(0, 6).map(([lang, count]) => (
                     <div key={lang} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.85rem" }}>
-                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: LANGUAGE_COLORS[lang] || "#8b949e" }} />
+                      {getDeviconUrl(lang) ? (
+                        <img src={getDeviconUrl(lang)} style={{ width: 14, height: 14 }} alt={lang} />
+                      ) : (
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: LANGUAGE_COLORS[lang] || "#8b949e" }} />
+                      )}
                       <span style={{ flex: 1 }}>{lang}</span>
                       <span style={{ color: "#6e7681" }}>{((count / totalLangs) * 100).toFixed(1)}%</span>
                     </div>
@@ -152,20 +167,29 @@ export default function ProfileDashboard() {
             </div>
           </div>
 
-          <div className="bento-item" style={{ gridColumn: "span 12", display: "flex", justifyContent: "space-around", padding: "24px" }}>
-            {[
-              { val: user ? fmt(user.public_repos * 12) : "—", label: "Commits", color: "#3fb950" },
-              { val: user ? fmt(Math.floor(user.followers / 5)) : "—", label: "Pull Requests", color: "#bc8cff" },
-              { val: user ? fmt(user.public_repos + 24) : "—", label: "Contributions", color: "#d29922" }
-            ].map((stat, i) => (
-              <div key={i} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "1.5rem", color: stat.color, fontWeight: 900 }}>{stat.val}</div>
-                <div style={{ color: "#8b949e", fontSize: "0.75rem" }}>{stat.label}</div>
-              </div>
-            ))}
+          <div style={{ gridColumn: "span 12", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+            {user ? (
+              <>
+                <img 
+                  src={`https://github-readme-stats.vercel.app/api?username=${user.login}&show_icons=true&theme=react&bg_color=0D1117&title_color=58A6FF&text_color=E6EDF3&icon_color=BC8CFF&border_color=30363d&hide_border=false`} 
+                  style={{ width: "100%", borderRadius: "24px", border: "1px solid rgba(255,255,255,0.05)" }} 
+                  alt="GitHub Stats" 
+                />
+                <img 
+                  src={`https://github-readme-stats.vercel.app/api/top-langs/?username=${user.login}&layout=compact&theme=react&bg_color=0D1117&title_color=58A6FF&text_color=E6EDF3&border_color=30363d&hide_border=false`} 
+                  style={{ width: "100%", borderRadius: "24px", border: "1px solid rgba(255,255,255,0.05)" }} 
+                  alt="Top Languages" 
+                />
+              </>
+            ) : (
+              <>
+                <Skeleton w="100%" h="195px" />
+                <Skeleton w="100%" h="195px" />
+              </>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { API_CONFIG } from "@/constants";
+import { LOCAL_STORAGE_KEY } from "@/constants/common";
 import { apiClient } from "./apiClient";
 
 export async function loginWithGithubHandler() {
@@ -7,6 +8,8 @@ export async function loginWithGithubHandler() {
 }
 
 export function logoutHandler() {
-  localStorage.removeItem("github_token");
+  localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
+  // Clear cookie as well
+  document.cookie = `${LOCAL_STORAGE_KEY.ACCESS_TOKEN}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
   window.location.href = "/";
 }

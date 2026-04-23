@@ -1,4 +1,5 @@
 import { API_CONFIG } from "@/constants";
+import { LOCAL_STORAGE_KEY } from "@/constants/common";
 
 export async function apiClient({
   url,
@@ -7,7 +8,7 @@ export async function apiClient({
   headers = {},
 }) {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("github_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN) : null;
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
     const { BASE_URL } = API_CONFIG;

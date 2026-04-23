@@ -2,13 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { searchRepositoriesHandler } from "@/helper";
+import { getDeviconUrl } from "@/helper";
 import { DISCOVER_PAGE_CONFIG, LANGUAGE_COLORS, ROUTES } from "@/constants";
-import { 
+import {
   SearchIcon, StarIcon, UpdateIcon, HelpIcon, CallSplitIcon,
   LanguageIcon, OpenInNewIcon, ErrorIcon, ExploreIcon,
   AccessTimeIcon, AutoAwesomeIcon, FilterListIcon
 } from "@/components";
-import Sidebar from "@/features/layout/Sidebar";
 
 const { ERROR_TEXT, NO_PROJECTS_TEXT, NO_DESC_TEXT, ISSUES_LABEL, UPDATED_LABEL } = DISCOVER_PAGE_CONFIG;
 
@@ -43,7 +43,7 @@ const TOPICS = [
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const s = {
-  page: { minHeight: "100vh", background: "#0d1117", padding: "80px 24px 40px" },
+  page: { minHeight: "100vh", background: "transparent", padding: "80px 24px 40px" },
   headerBand: { marginBottom: 32 },
   searchRow: { display: "flex", gap: 12, alignItems: "center", marginBottom: 32 },
   searchWrap: { flex: 1, position: "relative" },
@@ -111,7 +111,11 @@ function RepoCard({ repo }) {
       <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: "auto", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 16 }}>
         {repo.language && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem", color: "#6e7681" }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: langColor }} />
+            {getDeviconUrl(repo.language) ? (
+              <img src={getDeviconUrl(repo.language)} style={{ width: 14, height: 14 }} alt={repo.language} />
+            ) : (
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: langColor }} />
+            )}
             <span>{repo.language}</span>
           </div>
         )}
@@ -134,6 +138,7 @@ export default function DiscoverProjects() {
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [sort, setSort] = useState("stars");
+  const [minStars, setMinStars] = useState(0);
   const [page, setPage] = useState(1);
   const [mounted, setMounted] = useState(false);
 
@@ -150,6 +155,7 @@ export default function DiscoverProjects() {
     if (selectedLangs.length) q += ` ${selectedLangs.map(l => `language:${l}`).join(" ")}`;
     if (selectedLabels.length) q += ` ${selectedLabels.map(l => `label:${l}`).join(" ")}`;
     if (selectedTopics.length) q += ` ${selectedTopics.map(t => `topic:${t}`).join(" ")}`;
+    if (minStars > 0) q += ` stars:>=${minStars}`;
     return q;
   };
 
@@ -159,18 +165,41 @@ export default function DiscoverProjects() {
   if (!mounted) return null;
 
   return (
-    <div style={s.page}>
-      <div style={{ maxWidth: "1400px", margin: "0 auto", display: "grid", gridTemplateColumns: "84px 1fr", gap: "50px" }}>
-        <Sidebar />
-        <div style={{ minWidth: 0 }}>
+    <>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
+        <div style={{ minWidth: 0, width: "100%" }}>
           <div style={s.headerBand}>
             <h1 style={{ fontSize: "2.5rem", fontWeight: 900, color: "#e6edf3", marginBottom: 12, letterSpacing: "-1.5px" }}>Discover <span style={{ background: "linear-gradient(135deg, #58a6ff, #bc8cff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Projects</span></h1>
             <p style={{ color: "#8b949e", marginBottom: 40, fontSize: "1.1rem" }}>Find the perfect open-source project to start your contribution journey.</p>
             
             <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) { setQuery(searchInput.trim()); setPage(1); } }} style={s.searchRow}>
               <div style={s.searchWrap}><SearchIcon iconProps={{ sx: s.searchIcon }} /><input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Search for projects, keywords, or topics..." style={s.searchInput} /></div>
+              
+              {/* SORT DROPDOWN */}
+              <select 
+                value={sort} 
+                onChange={e => { setSort(e.target.value); setPage(1); }} 
+                style={{ background: "rgba(33,38,45,0.8)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: "16px", color: "#e6edf3", fontSize: "1rem", outline: "none", cursor: "pointer" }}
+              >
+                <option value="stars">Most Stars</option>
+                <option value="forks">Most Forks</option>
+                <option value="updated">Recently Updated</option>
+              </select>
+
               <button type="submit" style={s.searchBtn}>Find Projects</button>
             </form>
+
+            {/* MIN STARS */}
+            <div style={s.filterGroup}>
+              <div style={s.filterLabel}><StarIcon iconProps={{ sx: { fontSize: 16 } }} /> Minimum Stars</div>
+              <div style={s.chipRow}>
+                {[0, 100, 500, 1000].map(val => (
+                  <div key={val} onClick={() => { setMinStars(val); setPage(1); }} style={s.chip(minStars === val, "#d29922")}>
+                    {val === 0 ? "Any" : `> ${val}`}
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* LANGUAGES (Multi-select) */}
             <div style={s.filterGroup}>
@@ -178,7 +207,11 @@ export default function DiscoverProjects() {
               <div style={s.chipRow}>
                 {LANGUAGES.map(lang => (
                   <div key={lang.value} onClick={() => toggleFilter(lang.value, selectedLangs, setSelectedLangs)} style={s.chip(selectedLangs.includes(lang.value), lang.color)}>
-                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: lang.color }} />
+                    {getDeviconUrl(lang.label) ? (
+                      <img src={getDeviconUrl(lang.label)} style={{ width: 14, height: 14 }} alt={lang.label} />
+                    ) : (
+                      <div style={{ width: 10, height: 10, borderRadius: "50%", background: lang.color }} />
+                    )}
                     {lang.label}
                   </div>
                 ))}
@@ -226,6 +259,6 @@ export default function DiscoverProjects() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

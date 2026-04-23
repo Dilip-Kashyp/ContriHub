@@ -1,15 +1,75 @@
-import Navbar from "./Navbar.jsx";
+import Sidebar from "./Sidebar.jsx";
+import { useRouter } from "next/router";
 import { Box, Container, Stack, Typography, GitHubIcon } from "@/components";
 import { APP_CONFIG, HOME_PAGE_CONFIG } from "@/constants";
 
 export default function Layout({ children }) {
+  const router = useRouter();
+  const isLanding = router.pathname === "/";
   return (
-    <Box boxProps={{ sx: { display: "flex", flexDirection: "column", minHeight: "100vh" } }}>
-      <Navbar />
-      <Box boxProps={{ component: "main", sx: { flexGrow: 1, display: "flex", flexDirection: "column" } }}>
-        {children}
+    <Box boxProps={{ 
+      sx: { 
+        width: "100%",
+        position: "relative",
+      } 
+    }}>
+      {/* Global 3D Background */}
+      <div style={{
+        position: "fixed", inset: 0, opacity: 0.25, pointerEvents: "none",
+        backgroundImage: `linear-gradient(rgba(88,166,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(88,166,255,0.15) 1px, transparent 1px)`,
+        backgroundSize: "60px 60px",
+        transform: "perspective(1000px) rotateX(60deg) translateY(-100px)",
+        transformOrigin: "top",
+        height: "200vh",
+        maskImage: "linear-gradient(to bottom, black, transparent)",
+        zIndex: 0
+      }} className="animate-grid-float" />
+
+      <style>{`
+        @keyframes gridFloat {
+          0% { transform: perspective(1000px) rotateX(60deg) translateY(-100px); }
+          50% { transform: perspective(1000px) rotateX(60deg) translateY(-120px); }
+          100% { transform: perspective(1000px) rotateX(60deg) translateY(-100px); }
+        }
+        .animate-grid-float { animation: gridFloat 10s infinite linear; }
+      `}</style>
+
+      <Box boxProps={{
+        sx: {
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: isLanding ? 0 : "40px",
+          maxWidth: isLanding ? "100%" : "1300px",
+          margin: "0 auto",
+          width: "100%",
+          padding: isLanding ? 0 : { xs: "20px", md: "40px 24px" },
+          position: "relative",
+          zIndex: 1,
+          flexGrow: 1,
+        }
+      }}>
+        {!isLanding && (
+          <>
+            <Sidebar />
+            {/* Spacer to reserve space for the fixed sidebar on desktop */}
+            <Box boxProps={{ sx: { width: "84px", flexShrink: 0, display: { xs: "none", md: "block" } } }} />
+          </>
+        )}
+        <Box boxProps={{ 
+          sx: { 
+            flexGrow: 1, 
+            display: "flex", 
+            flexDirection: "column",
+            minWidth: 0,
+            pb: { xs: "80px", md: 0 } // Space for mobile bottom nav
+          } 
+        }}>
+          <Box boxProps={{ component: "main", sx: { flexGrow: 1, display: "flex", flexDirection: "column", mb: 4 } }}>
+            {children}
+          </Box>
+          <Footer />
+        </Box>
       </Box>
-      <Footer />
     </Box>
   );
 }
@@ -25,7 +85,7 @@ function Footer() {
         mt: "auto",
       }
     }}>
-      <Container containerProps={{ maxWidth: "lg" }}>
+      <Container containerProps={{ maxWidth: "lg", disableGutters: true }}>
         <Stack stackProps={{
           direction: { xs: "column", md: "row" },
           justifyContent: "space-between",
