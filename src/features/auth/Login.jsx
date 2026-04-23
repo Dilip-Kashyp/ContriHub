@@ -1,10 +1,29 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import { Stack, Container, Box, Typography, Button, GitHubIcon, AutoAwesomeIcon } from "@/components";
 import { LOGIN_PAGE_CONFIG } from "@/constants";
 import { loginWithGithubHandler } from "@/helper";
+import { LOCAL_STORAGE_KEY } from "@/constants/common";
 
 const { PAGE_HEADER, PAGE_SUBTITLE, GITHUB_LOGIN_BUTTON } = LOGIN_PAGE_CONFIG;
 
 export default function Login() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Extract token from hash (e.g., #token=...)
+    const hash = window.location.hash;
+    if (hash && hash.includes("token=")) {
+      const extractedToken = hash.split("token=")[1]?.split("&")[0];
+      if (extractedToken) {
+        localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, extractedToken);
+        // Set cookie for middleware access
+        document.cookie = `${LOCAL_STORAGE_KEY.ACCESS_TOKEN}=${extractedToken}; path=/; max-age=31536000; SameSite=Lax`;
+        // Redirect to dashboard immediately
+        router.replace("/dashboard");
+      }
+    }
+  }, [router]);
   return (
     <Box boxProps={{
       sx: {
