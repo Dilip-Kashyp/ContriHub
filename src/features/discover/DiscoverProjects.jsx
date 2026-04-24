@@ -3,60 +3,61 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { searchRepositoriesHandler } from "@/helper";
 import { getDeviconUrl } from "@/helper";
-import { DISCOVER_PAGE_CONFIG, LANGUAGE_COLORS, ROUTES } from "@/constants";
 import {
   SearchIcon, StarIcon, UpdateIcon, HelpIcon, CallSplitIcon,
   LanguageIcon, OpenInNewIcon, ErrorIcon, ExploreIcon,
   AccessTimeIcon, AutoAwesomeIcon, FilterListIcon
 } from "@/components";
+import { 
+  DISCOVER_PAGE_CONFIG, LANGUAGE_OPTIONS, TOPIC_OPTIONS, 
+  DISCOVER_LABELS, SORT_OPTIONS, MIN_STAR_OPTIONS, 
+  LANGUAGE_COLORS, ROUTES 
+} from "@/constants";
 
 const { ERROR_TEXT, NO_PROJECTS_TEXT, NO_DESC_TEXT, ISSUES_LABEL, UPDATED_LABEL } = DISCOVER_PAGE_CONFIG;
 
-// ── Data ──────────────────────────────────────────────────────────────────────
-const LANGUAGES = [
-  { value: "javascript", label: "JavaScript", color: "#f1e05a" },
-  { value: "typescript", label: "TypeScript", color: "#3178c6" },
-  { value: "python", label: "Python", color: "#3572A5" },
-  { value: "go", label: "Go", color: "#00ADD8" },
-  { value: "rust", label: "Rust", color: "#dea584" },
-  { value: "java", label: "Java", color: "#b07219" },
-  { value: "cpp", label: "C++", color: "#f34b7d" },
-  { value: "ruby", label: "Ruby", color: "#701516" },
-  { value: "php", label: "PHP", color: "#4F5D95" },
-  { value: "swift", label: "Swift", color: "#F05138" },
-];
-
-const LABELS = [
-  { value: "good-first-issue", label: "Beginner Friendly", icon: <AutoAwesomeIcon iconProps={{ sx: { fontSize: 14 } }} /> },
-  { value: "help-wanted", label: "Help Wanted", icon: <HelpIcon iconProps={{ sx: { fontSize: 14 } }} /> },
-  { value: "bug", label: "Bug Fixes", icon: <ErrorIcon iconProps={{ sx: { fontSize: 14 } }} /> },
-  { value: "documentation", label: "Docs", icon: <ExploreIcon iconProps={{ sx: { fontSize: 14 } }} /> },
-];
-
-const TOPICS = [
-  { value: "react", label: "React" },
-  { value: "nextjs", label: "Next.js" },
-  { value: "nodejs", label: "Node.js" },
-  { value: "machine-learning", label: "ML/AI" },
-  { value: "web3", label: "Web3" },
-];
+// Map icon strings to components
+const ICON_MAP = {
+  AutoAwesomeIcon,
+  HelpIcon,
+  ErrorIcon,
+  ExploreIcon
+};
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const s = {
   page: { minHeight: "100vh", background: "transparent", padding: "80px 24px 40px" },
   headerBand: { marginBottom: 32 },
-  searchRow: { display: "flex", gap: 12, alignItems: "center", marginBottom: 32 },
-  searchWrap: { flex: 1, position: "relative" },
+  searchRow: { 
+    display: "flex", 
+    gap: 12, 
+    alignItems: "center", 
+    marginBottom: 32,
+    flexWrap: "wrap" 
+  },
+  searchWrap: { flex: "1 1 300px", position: "relative" },
   searchIcon: { position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)", color: "#6e7681", fontSize: 20 },
   searchInput: {
     width: "100%", background: "rgba(33,38,45,0.4)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 16,
     padding: "16px 16px 16px 52px", color: "#e6edf3", fontSize: "1rem", outline: "none", boxSizing: "border-box",
     transition: "all 0.3s ease", "&:focus": { borderColor: "#58a6ff33", background: "rgba(33,38,45,0.6)" }
   },
+  sortSelect: { 
+    background: "rgba(33,38,45,0.8)", 
+    border: "1px solid rgba(255,255,255,0.1)", 
+    borderRadius: 16, 
+    padding: "16px", 
+    color: "#e6edf3", 
+    fontSize: "1rem", 
+    outline: "none", 
+    cursor: "pointer",
+    flex: "0 1 auto"
+  },
   searchBtn: {
     background: "linear-gradient(135deg, #58a6ff, #388bfd)", border: "none", borderRadius: 16,
     padding: "16px 32px", color: "#fff", fontSize: "1rem", fontWeight: 700, cursor: "pointer",
-    boxShadow: "0 4px 14px rgba(56, 139, 253, 0.3)"
+    boxShadow: "0 4px 14px rgba(56, 139, 253, 0.3)",
+    flex: "0 1 auto"
   },
   filterGroup: { marginBottom: 24 },
   filterLabel: { fontSize: "0.75rem", fontWeight: 800, color: "#6e7681", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 },
@@ -72,7 +73,11 @@ const s = {
     transform: active ? "translateY(-1px)" : "none",
     boxShadow: active ? `0 4px 12px ${color || "#58a6ff"}15` : "none"
   }),
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(420px, 1fr))", gap: 20 },
+  grid: { 
+    display: "grid", 
+    gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 420px), 1fr))", 
+    gap: 20 
+  },
   card: {
     background: "rgba(22,27,34,0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.05)",
     borderRadius: 24, padding: "28px", transition: "all 0.3s ease", display: "flex", flexDirection: "column", gap: 16
@@ -175,15 +180,12 @@ export default function DiscoverProjects() {
             <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) { setQuery(searchInput.trim()); setPage(1); } }} style={s.searchRow}>
               <div style={s.searchWrap}><SearchIcon iconProps={{ sx: s.searchIcon }} /><input value={searchInput} onChange={e => setSearchInput(e.target.value)} placeholder="Search for projects, keywords, or topics..." style={s.searchInput} /></div>
               
-              {/* SORT DROPDOWN */}
               <select 
                 value={sort} 
                 onChange={e => { setSort(e.target.value); setPage(1); }} 
-                style={{ background: "rgba(33,38,45,0.8)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 16, padding: "16px", color: "#e6edf3", fontSize: "1rem", outline: "none", cursor: "pointer" }}
+                style={s.sortSelect}
               >
-                <option value="stars">Most Stars</option>
-                <option value="forks">Most Forks</option>
-                <option value="updated">Recently Updated</option>
+                {SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
 
               <button type="submit" style={s.searchBtn}>Find Projects</button>
@@ -193,9 +195,9 @@ export default function DiscoverProjects() {
             <div style={s.filterGroup}>
               <div style={s.filterLabel}><StarIcon iconProps={{ sx: { fontSize: 16 } }} /> Minimum Stars</div>
               <div style={s.chipRow}>
-                {[0, 100, 500, 1000].map(val => (
-                  <div key={val} onClick={() => { setMinStars(val); setPage(1); }} style={s.chip(minStars === val, "#d29922")}>
-                    {val === 0 ? "Any" : `> ${val}`}
+                {MIN_STAR_OPTIONS.map(opt => (
+                  <div key={opt.value} onClick={() => { setMinStars(opt.value); setPage(1); }} style={s.chip(minStars === opt.value, "#d29922")}>
+                    {opt.label}
                   </div>
                 ))}
               </div>
@@ -205,7 +207,7 @@ export default function DiscoverProjects() {
             <div style={s.filterGroup}>
               <div style={s.filterLabel}><LanguageIcon iconProps={{ sx: { fontSize: 16 } }} /> Programming Languages</div>
               <div style={s.chipRow}>
-                {LANGUAGES.map(lang => (
+                {LANGUAGE_OPTIONS.map(lang => (
                   <div key={lang.value} onClick={() => toggleFilter(lang.value, selectedLangs, setSelectedLangs)} style={s.chip(selectedLangs.includes(lang.value), lang.color)}>
                     {getDeviconUrl(lang.label) ? (
                       <img src={getDeviconUrl(lang.label)} style={{ width: 14, height: 14 }} alt={lang.label} />
@@ -222,11 +224,14 @@ export default function DiscoverProjects() {
             <div style={s.filterGroup}>
               <div style={s.filterLabel}><FilterListIcon iconProps={{ sx: { fontSize: 16 } }} /> Project Tags & Labels</div>
               <div style={s.chipRow}>
-                {LABELS.map(label => (
-                  <div key={label.value} onClick={() => toggleFilter(label.value, selectedLabels, setSelectedLabels)} style={s.chip(selectedLabels.includes(label.value))}>
-                    {label.icon} {label.label}
-                  </div>
-                ))}
+                {DISCOVER_LABELS.map(label => {
+                  const Icon = ICON_MAP[label.icon];
+                  return (
+                    <div key={label.value} onClick={() => toggleFilter(label.value, selectedLabels, setSelectedLabels)} style={s.chip(selectedLabels.includes(label.value))}>
+                      {Icon && <Icon iconProps={{ sx: { fontSize: 14 } }} />} {label.label}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -234,7 +239,7 @@ export default function DiscoverProjects() {
             <div style={s.filterGroup}>
               <div style={s.filterLabel}><ExploreIcon iconProps={{ sx: { fontSize: 16 } }} /> Popular Topics</div>
               <div style={s.chipRow}>
-                {TOPICS.map(topic => (
+                {TOPIC_OPTIONS.map(topic => (
                   <div key={topic.value} onClick={() => toggleFilter(topic.value, selectedTopics, setSelectedTopics)} style={s.chip(selectedTopics.includes(topic.value), "#bc8cff")}>
                     {topic.label}
                   </div>

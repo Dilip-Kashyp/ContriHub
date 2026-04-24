@@ -5,7 +5,7 @@ import { LOGIN_PAGE_CONFIG } from "@/constants";
 import { loginWithGithubHandler } from "@/helper";
 import { LOCAL_STORAGE_KEY } from "@/constants/common";
 
-const { PAGE_HEADER, PAGE_SUBTITLE, GITHUB_LOGIN_BUTTON } = LOGIN_PAGE_CONFIG;
+const { PAGE_HEADER, PAGE_SUBTITLE, GITHUB_LOGIN_BUTTON, LOGIN_FEATURES } = LOGIN_PAGE_CONFIG;
 
 export default function Login() {
   const router = useRouter();
@@ -137,11 +137,7 @@ export default function Login() {
 
             {/* Feature Bullets */}
             <Stack stackProps={{ gap: 1.5, width: "100%", mt: 1 }}>
-              {[
-                "Discover beginner-friendly projects",
-                "Track your contribution history",
-                "Build your developer profile",
-              ].map((text, i) => (
+              {LOGIN_FEATURES.map((text, i) => (
                 <Stack
                   key={i}
                   stackProps={{

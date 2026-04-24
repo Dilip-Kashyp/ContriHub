@@ -57,25 +57,44 @@ export const DISCOVER_PAGE_CONFIG = {
 };
 
 export const LANGUAGE_OPTIONS = [
-  { value: "", label: "Any Language" },
-  { value: "javascript", label: "JavaScript" },
-  { value: "typescript", label: "TypeScript" },
-  { value: "python", label: "Python" },
-  { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-  { value: "ruby", label: "Ruby" },
-  { value: "swift", label: "Swift" },
-  { value: "kotlin", label: "Kotlin" },
-  { value: "php", label: "PHP" },
+  { value: "javascript", label: "JavaScript", color: "#f1e05a" },
+  { value: "typescript", label: "TypeScript", color: "#3178c6" },
+  { value: "python", label: "Python", color: "#3572A5" },
+  { value: "go", label: "Go", color: "#00ADD8" },
+  { value: "rust", label: "Rust", color: "#dea584" },
+  { value: "java", label: "Java", color: "#b07219" },
+  { value: "cpp", label: "C++", color: "#f34b7d" },
+  { value: "ruby", label: "Ruby", color: "#701516" },
+  { value: "php", label: "PHP", color: "#4F5D95" },
+  { value: "swift", label: "Swift", color: "#F05138" },
+];
+
+export const TOPIC_OPTIONS = [
+  { value: "react", label: "React" },
+  { value: "nextjs", label: "Next.js" },
+  { value: "nodejs", label: "Node.js" },
+  { value: "machine-learning", label: "ML/AI" },
+  { value: "web3", label: "Web3" },
+];
+
+export const DISCOVER_LABELS = [
+  { value: "good-first-issue", label: "Beginner Friendly", icon: "AutoAwesomeIcon" },
+  { value: "help-wanted", label: "Help Wanted", icon: "HelpIcon" },
+  { value: "bug", label: "Bug Fixes", icon: "ErrorIcon" },
+  { value: "documentation", label: "Docs", icon: "ExploreIcon" },
 ];
 
 export const SORT_OPTIONS = [
   { value: "stars", label: "Most Stars" },
+  { value: "forks", label: "Most Forks" },
   { value: "updated", label: "Recently Updated" },
-  { value: "help-wanted-issues", label: "Help Wanted" },
-  { value: "forks", label: "Forks" },
+];
+
+export const MIN_STAR_OPTIONS = [
+  { value: 0, label: "Any" },
+  { value: 100, label: "> 100" },
+  { value: 500, label: "> 500" },
+  { value: 1000, label: "> 1000" },
 ];
 
 export const LANGUAGE_COLORS = {

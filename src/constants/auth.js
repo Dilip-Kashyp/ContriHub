@@ -31,5 +31,10 @@ export const LOGIN_PAGE_CONFIG = {
         px: 4
       }
     }
-  }
+  },
+  LOGIN_FEATURES: [
+    "Discover beginner-friendly projects",
+    "Track your contribution history",
+    "Build your developer profile",
+  ]
 };
