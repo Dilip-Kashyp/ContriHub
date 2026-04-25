@@ -1,6 +1,6 @@
 export const API_CONFIG = {
-  // BASE_URL: "https://url-shortener-be.duckdns.org/contrihube/api/v1",
-  BASE_URL: "http://localhost:5050/api/v1",
+  BASE_URL: "https://url-shortener-be.duckdns.org/contrihube/api/v1",
+  // BASE_URL: "http://localhost:5050/api/v1",
 };
 
 export const API_ENDPOINTS = {
