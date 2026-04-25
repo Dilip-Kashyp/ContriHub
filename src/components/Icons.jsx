@@ -35,7 +35,14 @@ import {
   Link as MuiLink,
   Language as MuiLanguage,
   Update as MuiUpdate,
-  LiveHelp as MuiLiveHelp
+  LiveHelp as MuiLiveHelp,
+  SmartToy as MuiSmartToy,
+  ContentCopy as MuiContentCopy,
+  Psychology as MuiPsychology,
+  Route as MuiRoute,
+  Map as MuiMap,
+  Chat as MuiChat,
+  Bolt as MuiBolt,
 } from "@mui/icons-material";
 
 export const GitHubIcon = ({ iconProps = {} }) => <MuiGitHub {...iconProps} />;
@@ -75,3 +82,10 @@ export const LinkIcon = ({ iconProps = {} }) => <MuiLink {...iconProps} />;
 export const LanguageIcon = ({ iconProps = {} }) => <MuiLanguage {...iconProps} />;
 export const UpdateIcon = ({ iconProps = {} }) => <MuiUpdate {...iconProps} />;
 export const HelpIcon = ({ iconProps = {} }) => <MuiLiveHelp {...iconProps} />;
+export const SmartToyIcon = ({ iconProps = {} }) => <MuiSmartToy {...iconProps} />;
+export const ContentCopyIcon = ({ iconProps = {} }) => <MuiContentCopy {...iconProps} />;
+export const PsychologyIcon = ({ iconProps = {} }) => <MuiPsychology {...iconProps} />;
+export const RouteIcon = ({ iconProps = {} }) => <MuiRoute {...iconProps} />;
+export const MapIcon = ({ iconProps = {} }) => <MuiMap {...iconProps} />;
+export const ChatIcon = ({ iconProps = {} }) => <MuiChat {...iconProps} />;
+export const BoltIcon = ({ iconProps = {} }) => <MuiBolt {...iconProps} />;

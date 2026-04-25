@@ -1,57 +1,61 @@
 export const HOME_PAGE_CONFIG = {
-  HERO_BADGE: "NEXT-GEN OPEN SOURCE HUB",
-  HERO_TITLE: ["BUILD.", "CONTRIBUTE.", "GROW."],
-  HERO_SUBTITLE: "The premium platform for developers to discover beginner-friendly projects, track their impact, and master the art of open source.",
-  CTA_PRIMARY: "Get Started Now",
-  CTA_SECONDARY: "Browse Projects",
-  FEATURES_TITLE: "Engineered for Builders",
-  FEATURES_SUBTITLE: "Powerful tools to accelerate your contribution journey.",
+  HERO_BADGE: "ContriHub v1.0 • Now in Beta",
+  HERO_TITLE: ["Build your legacy in", "Open Source."],
+  HERO_SUBTITLE: "The command center for open source contributors. Discover beginner-friendly projects, generate AI-driven roadmaps, and scale your impact with precision.",
+  CTA_PRIMARY: "Let's Explore",
+  CTA_SECONDARY: "Plan your Learning Path",
+  FEATURES_TITLE: "Everything you need to contribute.",
+  FEATURES_SUBTITLE: "A complete suite of tools designed to move you from first commit to project maintainer.",
   BENTO_FEATURES: [
     {
-      title: "Smart Discovery",
-      desc: "AI-powered filtering that surfaces the most relevant beginner-friendly issues across 30+ languages.",
-      iconKey: "search",
+      title: "Gibo Command Center",
+      desc: "Our AI orchestrator that handles codebase analysis, issue discovery, and roadmap generation in one interface.",
+      iconKey: "roadmap",
       span: 8,
-      gradient: "linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, transparent 100%)",
-      color: "#58a6ff"
+      gradient: "linear-gradient(135deg, rgba(88, 166, 255, 0.05) 0%, transparent 100%)",
+      color: "#58a6ff",
+      isPrimary: false
     },
     {
-      title: "Real-time Stats",
-      desc: "Track your impact with pixel-perfect dashboards and automated activity syncing.",
-      iconKey: "timeline",
+      title: "Global Pulse",
+      desc: "Real-time activity tracking across the open source ecosystem. Stay synced with every repo you care about.",
+      iconKey: "pulse",
       span: 4,
-      gradient: "linear-gradient(135deg, rgba(188, 140, 255, 0.1) 0%, transparent 100%)",
+      gradient: "linear-gradient(135deg, rgba(63, 185, 80, 0.05) 0%, transparent 100%)",
+      color: "#3fb950",
+      isLive: true
+    },
+    {
+      title: "Native Extensions",
+      desc: "Connect your workflow with GitHub, VS Code, and more. ContriHub fits where you work.",
+      iconKey: "globe",
+      upcoming: true,
+      span: 4,
+      gradient: "linear-gradient(135deg, rgba(188, 140, 255, 0.05) 0%, transparent 100%)",
       color: "#bc8cff"
     },
     {
-      title: "Native OAuth",
-      desc: "One-click secure connection with GitHub. Zero configuration, instant access.",
-      iconKey: "github",
-      span: 4,
-      gradient: "linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, transparent 100%)",
-      color: "#3fb950"
-    },
-    {
-      title: "Contribution Pipeline",
-      desc: "From choosing a repo to landing your first PR. We provide the roadmap to becoming an open source maintainer.",
-      iconKey: "rocket",
+      title: "Intelligent Roadmaps",
+      desc: "Personalized learning paths that evolve with your skill level. Master any stack by contributing to real code.",
+      iconKey: "roadmap",
       span: 8,
-      gradient: "linear-gradient(135deg, rgba(210, 153, 34, 0.1) 0%, transparent 100%)",
+      gradient: "linear-gradient(135deg, rgba(210, 153, 34, 0.05) 0%, transparent 100%)",
       color: "#d29922"
     }
   ],
   STATS: [
-    { val: "50,000+", label: "Repositories" },
-    { val: "100,000+", label: "Contributors" },
-    { val: "30+", label: "Languages" },
-    { val: "1M+", label: "Pull Requests" }
+    { val: "50k+", label: "Projects" },
+    { val: "100k+", label: "Builders" },
+    { val: "30+", label: "Stacks" },
+    { val: "1M+", label: "Commits" }
   ],
-  FINAL_CTA: "Ready to make your mark?",
-  FINAL_CTA_SUB: "Join the global community of builders today.",
-  FOOTER_TAGLINE: "Built for the open-source community.",
+  FINAL_CTA: "Build your developer profile today.",
+  FINAL_CTA_SUB: "Join thousands of developers making an impact in open source.",
+  FOOTER_TAGLINE: "The OS for OS.",
   FOOTER_LINKS: [
     { label: "GitHub", href: "https://github.com" },
-    { label: "Documentation", href: "#" },
+    { label: "Blog", href: "#" },
+    { label: "Terms", href: "#" },
     { label: "Privacy", href: "#" },
   ],
 };

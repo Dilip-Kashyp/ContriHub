@@ -81,6 +81,29 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  font-size: clamp(0.875rem, 0.8rem + 0.38vw, 1.125rem);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2rem, 1.5rem + 2.5vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  letter-spacing: -0.03em;
+}
+
+h3 {
+  font-size: clamp(1.2rem, 1rem + 1vw, 1.75rem);
 }
 
 a {
@@ -308,59 +331,29 @@ a:hover {
   border-color: rgba(88, 166, 255, 0.35);
 }
 
-/* ── Hero Particles ────────────────────────────────────── */
-.hero-bg {
+/* ── Bento Grid Item ────────────────────────────────────── */
+.bento-item {
+  animation: fadeInUp 0.6s var(--ease-out) both;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all var(--duration-normal) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
 
-.hero-bg::before {
-  content: "";
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(88, 166, 255, 0.08), transparent 60%);
-  top: -200px;
-  right: -100px;
-  pointer-events: none;
+.bento-item:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
 }
 
-.hero-bg::after {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(188, 140, 255, 0.06), transparent 60%);
-  bottom: -150px;
-  left: -100px;
-  pointer-events: none;
-}
-
-/* ── Scrollbar ─────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--border-default);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-tertiary);
-}
-
-/* ── Focus ─────────────────────────────────────────────── */
-*:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+@media (max-width: 768px) {
+  .bento-item {
+    padding: 20px;
+    border-radius: 16px;
+  }
 }
 
 /* ── Selection ─────────────────────────────────────────── */

@@ -1,95 +1,71 @@
 # ContriHub
 
-ContriHub is an open-source platform designed to seamlessly connect developers with beginner-friendly open-source projects. By aggregating repositories based on custom filters and providing an intuitive dashboard, ContriHub simplifies the process of discovering issues, tracking contributions, and building a professional developer profile.
+ContriHub is a premium, open-source platform designed to bridge the gap between developers and beginner-friendly open-source projects. Built with a high-tech "Dark Observatory" aesthetic, it leverages AI to simplify codebase analysis, issue discovery, and personalized learning journeys.
 
 ## Preview
 
+![Explore Projects](screenshots/explore.png)
+*Discover projects with powerful filters and AI-powered insights.*
+
+![Learning Path](screenshots/learning_path.png)
+*Your personalized AI-generated journey into open source.*
+
+![Key Features](screenshots/features.png)
+*Advanced tools for the modern developer.*
+
 ![Dashboard](screenshots/dashboard.png)
-![Discover Projects](screenshots/discover.png)
+*Track your contributions and developer stats in one place.*
 
 ## Architecture
 
-The project is structured as a full-stack monorepo, decoupled into a Go-based backend and a React (Next.js) frontend.
+The project is structured as a full-stack monorepo:
 
-- **Frontend**: Next.js (Pages Router), React, Material UI, Tailwind CSS
-- **Backend**: Go, Gin Framework, GORM
-- **Database**: PostgreSQL
-- **Caching & Sessions**: Redis
-- **Authentication**: GitHub OAuth
+- **Frontend**: Next.js, React, Material UI, Tailwind CSS. Featuring a custom 3D perspective grid and glassmorphism design.
+- **Backend**: Go (Gin), GORM (PostgreSQL), Redis (Caching & Rate Limiting).
+- **AI Engine**: Integrated "Gibo AI" for repository explanation, roadmap generation, and intelligent chat.
 
-## Features
+## Key Features
 
-- **GitHub OAuth Integration**: Secure authentication and session management using GitHub.
-- **Dynamic Discovery Engine**: Filter repositories by programming language, labels (e.g., `good-first-issue`), popular topics, and minimum star counts.
-- **Developer Profile Dashboard**: Real-time aggregation of GitHub statistics, top languages, and top repositories.
-- **Responsive 3D UI**: Premium, dark-themed UI with glassmorphism and animated 3D grid backgrounds.
-- **RESTful API**: Scalable Go backend adhering to strict clean architecture principles.
+### 🚀 Gibo AI Assistant
+Our AI orchestrator handles codebase analysis, issue discovery, and roadmap generation. It's designed to be your companion in the open-source world.
+- **Explain Repo**: Instant high-level summaries of complex codebases.
+- **Intelligent Roadmaps**: Personalized learning paths that evolve with your skill level.
+- **Gibo Chat**: Context-aware AI chat to help you navigate project structures.
 
-## Prerequisites
+### 🔍 Dynamic Discovery Engine
+Filter repositories by:
+- Programming language (JS, Go, Rust, Python, etc.)
+- Labels (e.g., `good-first-issue`, `help-wanted`)
+- Topics (React, Web3, ML/AI, etc.)
+- Minimum star counts.
 
-- Go 1.21 or higher
-- Node.js 18 or higher
-- PostgreSQL
-- Redis
-- Docker (optional, for containerized deployment)
+### 📊 Developer Command Center
+A professional dashboard that aggregates your GitHub statistics, top languages, and active repositories, helping you build a standout developer profile.
 
-## Installation and Setup
+## Setup & Installation
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/ContriHub.git
-cd ContriHub
-```
-
-### 2. Backend Setup
-
+### 1. Backend Setup
 ```bash
 cd backend
 go mod tidy
-```
-
-Set up your `.env` file in the `backend` directory based on the provided `.env.example`. Ensure you configure your GitHub OAuth credentials, database connection strings, and Redis URI.
-
-Run the backend server:
-
-```bash
+# Configure .env based on .env.example
 go run cmd/main.go
 ```
+The backend API runs on `http://localhost:5050`.
 
-The backend API will be available at `http://localhost:8080`.
-
-### 3. Frontend Setup
-
+### 2. Frontend Setup
 ```bash
-cd ../frontend
+cd frontend
 npm install
-```
-
-Set up your `.env.local` file in the `frontend` directory:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
-```
-
-Run the frontend development server:
-
-```bash
+# Configure .env.local
 npm run dev
 ```
-
-The frontend will be available at `http://localhost:3000`.
+The frontend application runs on `http://localhost:3000`.
 
 ## Contributing
 
-We welcome contributions from the community. Please read our contributing guidelines before submitting pull requests.
-
-1. Fork the project.
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+We welcome contributions! Please fork the repo, create a feature branch, and submit a PR.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+MIT License. See [LICENSE](LICENSE) for details.

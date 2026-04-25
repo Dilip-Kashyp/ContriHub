@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { PAGE_ROUTES, LOCAL_STORAGE_KEY } from '@/constants/common'
 
-export function middleware(request) {
+export function proxy(request) {
   const token = request.cookies.get(LOCAL_STORAGE_KEY.ACCESS_TOKEN)?.value;
   const { pathname } = request.nextUrl;
   

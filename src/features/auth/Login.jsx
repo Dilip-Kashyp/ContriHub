@@ -31,7 +31,8 @@ export default function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        py: 8,
+        py: { xs: 2, md: 2 },
+        px: 2,
         position: "relative",
         overflow: "hidden",
       }
@@ -40,8 +41,8 @@ export default function Login() {
       <Box boxProps={{
         sx: {
           position: "absolute",
-          width: 400,
-          height: 400,
+          width: { xs: 250, md: 400 },
+          height: { xs: 250, md: 400 },
           borderRadius: "50%",
           background: "radial-gradient(circle, rgba(88, 166, 255, 0.08), transparent 60%)",
           top: "10%",
@@ -52,8 +53,8 @@ export default function Login() {
       <Box boxProps={{
         sx: {
           position: "absolute",
-          width: 350,
-          height: 350,
+          width: { xs: 200, md: 350 },
+          height: { xs: 200, md: 350 },
           borderRadius: "50%",
           background: "radial-gradient(circle, rgba(188, 140, 255, 0.06), transparent 60%)",
           bottom: "10%",
@@ -66,51 +67,24 @@ export default function Login() {
         <Box boxProps={{
           className: "animate-scale-in",
           sx: {
-            p: { xs: 4, md: 6 },
-            background: "rgba(22, 27, 34, 0.7)",
+            p: { xs: 3, md: 5 },
+            background: "rgba(255, 255, 255, 0.02)",
             backdropFilter: "blur(24px)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "24px",
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+            borderRadius: "20px",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 24px 48px rgba(0,0,0,0.4)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
             transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
             "&:hover": {
-              transform: "translateY(-4px)",
-              boxShadow: "0 32px 64px rgba(0,0,0,0.5)",
+              transform: "translateY(-3px)",
+              boxShadow: "0 28px 56px rgba(0,0,0,0.5)",
               borderColor: "rgba(88, 166, 255, 0.3)",
             },
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "4px",
-              background: "linear-gradient(90deg, #58a6ff, #bc8cff, #f778ba)",
-              backgroundSize: "200% 100%",
-              animation: "gradientShift 4s ease infinite",
-            }
           }
         }}>
-          <Stack stackProps={{ alignItems: "center", gap: 3 }}>
+          <Stack stackProps={{ alignItems: "center", gap: 2.5 }}>
             {/* Animated Icon */}
-            <Box boxProps={{
-              className: "animate-float",
-              sx: {
-                width: 72,
-                height: 72,
-                borderRadius: "20px",
-                background: "linear-gradient(135deg, rgba(88, 166, 255, 0.15), rgba(188, 140, 255, 0.15))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                mb: 1,
-              }
-            }}>
-              <GitHubIcon iconProps={{ sx: { fontSize: 40, color: "#e6edf3" } }} />
-            </Box>
-
             <Typography {...PAGE_HEADER} />
             <Typography {...PAGE_SUBTITLE} />
 
@@ -118,36 +92,37 @@ export default function Login() {
               buttonProps={{
                 ...GITHUB_LOGIN_BUTTON.buttonProps,
                 onClick: loginWithGithubHandler,
-                startIcon: <GitHubIcon iconProps={{ sx: { fontSize: 20 } }} />,
+                startIcon: <GitHubIcon iconProps={{ sx: { fontSize: 18 } }} />,
                 fullWidth: true,
                 sx: {
                   ...GITHUB_LOGIN_BUTTON.buttonProps.sx,
-                  py: 1.5,
-                  fontSize: "1rem",
-                  background: "linear-gradient(135deg, #58a6ff, #388bfd)",
+                  py: 1.2,
+                  fontSize: "0.9rem",
+                  background: "#fff",
+                  color: "#0d1117",
+                  fontWeight: 700,
                   "&:hover": {
-                    background: "linear-gradient(135deg, #388bfd, #58a6ff)",
-                    boxShadow: "0 0 24px rgba(88, 166, 255, 0.3)",
+                    background: "#f0f0f0",
                     transform: "translateY(-1px)",
                   },
-                  transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  transition: "all 0.3s ease",
                 }
               }}
             />
 
             {/* Feature Bullets */}
-            <Stack stackProps={{ gap: 1.5, width: "100%", mt: 1 }}>
+            <Stack stackProps={{ gap: 1, width: "100%", mt: 0.5 }}>
               {LOGIN_FEATURES.map((text, i) => (
                 <Stack
                   key={i}
                   stackProps={{
                     direction: "row",
                     alignItems: "center",
-                    gap: 1.5,
+                    gap: 1,
                   }}
                 >
-                  <AutoAwesomeIcon iconProps={{ sx: { fontSize: 14, color: "#58a6ff" } }} />
-                  <Typography typographyProps={{ variant: "body2", color: "#8b949e" }}>
+                  <AutoAwesomeIcon iconProps={{ sx: { fontSize: 12, color: "#58a6ff" } }} />
+                  <Typography typographyProps={{ variant: "body2", color: "#8b949e", sx: { fontSize: "0.78rem" } }}>
                     {text}
                   </Typography>
                 </Stack>
