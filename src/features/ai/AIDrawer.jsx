@@ -63,6 +63,8 @@ export default function AIDrawer({ open, onClose, title = "Gibo Response", respo
       .replace(/^\d+\.\s+(.+)$/gm, '<li style="margin:4px 0;padding-left:4px;font-size:0.82rem">$1</li>')
       // Bullet list
       .replace(/^[-*]\s+(.+)$/gm, '<li style="margin:4px 0;padding-left:4px;list-style:disc;font-size:0.82rem">$1</li>')
+      // Links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:none;border-bottom:1px solid rgba(88,166,255,0.2);font-weight:600">$1</a>')
       // Line breaks
       .replace(/\n\n/g, '<div style="height:10px"></div>')
       .replace(/\n/g, "<br/>");

@@ -29,7 +29,12 @@ export async function apiClient({
     const data = isJson ? await response.json() : null;
 
     if (!response.ok) {
-      throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+      if (data?.is_notification && typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("gibo-notification", { 
+          detail: { message: data.error, type: "error" } 
+        }));
+      }
+      throw new Error(data?.error || data?.message || `HTTP error! status: ${response.status}`);
     }
 
     return data;

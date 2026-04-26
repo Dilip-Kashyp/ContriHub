@@ -39,6 +39,24 @@ export default function GeneralAIPage() {
         const data = await getChatHistory();
         if (data && data.messages) {
           setMessages(data.messages);
+          
+          // Check for query param 'q' to auto-send a message
+          const urlParams = new URLSearchParams(window.location.search);
+          const queryMsg = urlParams.get("q");
+          if (queryMsg && data.messages.length === 0) { // Only if no history or it's a new session
+             // Wait a bit for history to settle if needed, or just append
+             handleAIMessage(queryMsg);
+             // Clear the query param so it doesn't re-send on refresh
+             router.replace("/chat", undefined, { shallow: true });
+          } else if (queryMsg) {
+             // If there is history, we still might want to send it if it's the last thing the user did
+             // But to avoid double sending, we can check if the last message is the same
+             const lastMsg = data.messages[data.messages.length - 1];
+             if (lastMsg?.content !== queryMsg) {
+                handleAIMessage(queryMsg);
+                router.replace("/chat", undefined, { shallow: true });
+             }
+          }
         }
       } catch (err) {
         console.error("Failed to load chat history:", err);
@@ -119,6 +137,8 @@ export default function GeneralAIPage() {
       .replace(/^# (.+)$/gm, '<h2 style="color:#fff;font-size:1.25rem;margin:24px 0 12px;font-weight:900">$1</h2>')
       .replace(/^\d+\.\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:4px;font-size:0.85rem">$1</li>')
       .replace(/^[-*]\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:4px;list-style:disc;font-size:0.85rem">$1</li>')
+      // Links
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:none;border-bottom:1px solid rgba(88,166,255,0.2);font-weight:600">$1</a>')
       .replace(/\n\n/g, '<div style="height:12px"></div>')
       .replace(/\n/g, "<br/>");
   };
@@ -161,7 +181,14 @@ export default function GeneralAIPage() {
         .suggest-chip:hover { background: rgba(88,166,255,0.2) !important; border-color: rgba(88,166,255,0.4) !important; color: #58a6ff !important; transform: translateY(-1px); }
       `}</style>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "calc(100vh - 80px)", minHeight: 0 }}>
+      <div style={{ 
+        maxWidth: "900px", 
+        margin: "0 auto", 
+        width: "100%", 
+        display: "flex", 
+        flexDirection: "column",
+        height: "calc(100vh - 16px)", // Fill viewport minus Layout padding
+      }}>
         
         {/* Header */}
         <div style={{ flexShrink: 0, marginBottom: 16, paddingBottom: 16, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>

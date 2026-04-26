@@ -159,7 +159,15 @@ export default function DiscoverProjects() {
                 <h2 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0, color: "#fff" }}>Gibo Project Suggester</h2>
               </div>
               <div style={{ maxWidth: "600px" }}>
-                <AIFindProjects />
+                <AIFindProjects 
+                  onResponse={(resp, title) => {
+                    setAiResponse(resp);
+                    setAiDrawerTitle(title);
+                    setAiDrawerOpen(true);
+                  }}
+                  onLoading={(l) => setAiLoading(l ? "finding" : null)}
+                  onError={(e) => setAiError(e)}
+                />
               </div>
             </div>
 
