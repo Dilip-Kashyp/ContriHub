@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PsychologyIcon, SearchIcon } from "@/components";
-import { findProjects } from "@/helper";
+import { findProjects, searchRepositoriesHandler } from "@/helper";
 import AIDrawer from "./AIDrawer";
 
 /**
@@ -21,7 +21,20 @@ export default function AIFindProjects() {
     setResponse("");
 
     try {
-      const data = await findProjects({ query: query.trim() });
+      // 1. Fetch real results from GitHub to prevent AI hallucinations
+      const searchRes = await searchRepositoriesHandler({ query: query.trim() });
+      const items = searchRes?.items || [];
+      
+      // Format the top 5 real repositories for the AI to analyze
+      const repoSummaries = items.slice(0, 5).map(repo => 
+        `Repo: ${repo.full_name} | Stars: ${repo.stargazers_count} | Language: ${repo.language || "Unknown"}\nDesc: ${repo.description || "No description"}`
+      ).join("\n\n");
+
+      // 2. Pass real data to Gibo for ranking and personalized advice
+      const data = await findProjects({ 
+        query: query.trim(),
+        repoResults: repoSummaries 
+      });
       setResponse(data.response);
     } catch (err) {
       setError(err.message || "Failed to get Gibo recommendations");

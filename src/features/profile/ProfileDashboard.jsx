@@ -110,13 +110,13 @@ export default function ProfileDashboard() {
         }
       `}</style>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%", padding: "80px 24px 40px" }}>
         <div className="profile-grid">
           <ProfileHeader user={user} repos={repos} />
           <StatCards user={user} />
           <LanguageSection repos={repos} />
           <TopReposSection repos={repos} />
-          <GithubStatsSection user={user} />
+          {/* <GithubStatsSection user={user} /> */}
         </div>
       </div>
     </>

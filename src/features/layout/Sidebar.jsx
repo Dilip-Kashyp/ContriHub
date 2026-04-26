@@ -22,6 +22,7 @@ export default function Sidebar() {
   const { data: user } = useSWR(token ? "/github/user" : null, getUserProfileHandler);
 
   const navItems = [
+    // { id: "home", label: "Home", path: ROUTES.HOME, icon: <HomeIcon iconProps={{ sx: { fontSize: 20 } }} /> },
     { id: "overview", label: "Dash", path: ROUTES.DASHBOARD, icon: <DashboardIcon iconProps={{ sx: { fontSize: 20 } }} /> },
     { id: "explore", label: "Explore", path: ROUTES.DISCOVER, icon: <ExploreIcon iconProps={{ sx: { fontSize: 20 } }} /> },
     { id: "roadmap", label: "Learning", path: ROUTES.ROADMAP, icon: <RouteIcon iconProps={{ sx: { fontSize: 20 } }} /> },
@@ -40,12 +41,12 @@ export default function Sidebar() {
           left: max(20px, calc((100vw - 1300px) / 2 + 20px));
           top: 30px;
           height: fit-content;
-          width: 68px;
-          padding: 10px 6px;
+          width: 72px;
+          padding: 12px 6px;
           background: rgba(22, 27, 34, 0.4);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 28px;
+          border-radius: 32px;
           box-shadow: 0 10px 40px rgba(0,0,0,0.3);
           flex-shrink: 0;
           z-index: 1000;
@@ -61,12 +62,12 @@ export default function Sidebar() {
             bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 85%;
-            max-width: 360px;
+            width: 90%;
+            max-width: 400px;
             height: auto;
             flex-direction: row;
             justify-content: space-around;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-radius: 24px;
           }
           .nav-btn { padding: 6px; gap: 2px; }
@@ -76,25 +77,37 @@ export default function Sidebar() {
       
       <div className="sidebar-capsule">
         {/* LOGO */}
-        <div className="hide-on-mobile" onClick={() => router.push(ROUTES.HOME)} style={{ width: "34px", height: "34px", borderRadius: "10px", background: "var(--accent-primary)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", margin: "0 auto 10px", flexShrink: 0 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-          </svg>
+        <div 
+          className="hide-on-mobile" 
+          onClick={() => router.push(ROUTES.HOME)} 
+          style={{ 
+            width: "48px", 
+            height: "48px", 
+            borderRadius: "14px", 
+            background: "rgba(255,255,255,0.03)", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            cursor: "pointer", 
+            margin: "0 auto 12px", 
+            flexShrink: 0,
+            transition: "transform 0.3s ease",
+            border: "1px solid rgba(255,255,255,0.05)"
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = "scale(1.05)"}
+          onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+        >
+          <img src="/favicon.png" alt="Logo" style={{ width: "80%", height: "80%", objectFit: "contain" }} />
         </div>
 
         {navItems.map(item => (
-          <button key={item.id} className={`nav-btn ${activePath.startsWith(item.path) ? "active" : ""}`} onClick={() => router.push(item.path)}>
+          <button key={item.id} className={`nav-btn ${activePath === item.path || (item.path !== "/" && activePath.startsWith(item.path)) ? "active" : ""}`} onClick={() => router.push(item.path)}>
             {item.icon}
             <span className="hide-on-mobile" style={{ fontSize: "0.55rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.5px" }}>{item.label}</span>
           </button>
         ))}
         
-        <button className={`nav-btn hide-on-mobile ${activePath === ROUTES.HOME ? "active" : ""}`} onClick={() => router.push(ROUTES.HOME)}>
-          <HomeIcon iconProps={{ sx: { fontSize: 20 } }} />
-          <span style={{ fontSize: "0.55rem", fontWeight: 800, textTransform: "uppercase" }}>Home</span>
-        </button>
-
-        <div className="hide-on-mobile" style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "4px 4px" }} />
+        <div className="hide-on-mobile" style={{ height: "1px", background: "rgba(255,255,255,0.06)", margin: "8px 8px" }} />
         
         {/* USER INFO / AUTH */}
         {token ? (
@@ -102,10 +115,12 @@ export default function Sidebar() {
             <div 
               onClick={() => router.push(ROUTES.PROFILE)}
               style={{ 
-                width: 36, height: 36, borderRadius: "50%", background: "#30363d", 
+                width: 38, height: 38, borderRadius: "50%", background: "#30363d", 
                 border: "2px solid rgba(88, 166, 255, 0.4)", cursor: "pointer", 
-                overflow: "hidden", margin: "4px auto", transition: "transform 0.2s", flexShrink: 0
+                overflow: "hidden", margin: "6px auto", transition: "transform 0.2s", flexShrink: 0
               }}
+              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
             >
               {user?.avatar_url ? <img src={user.avatar_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <GitHubIcon iconProps={{ sx: { fontSize: 16 } }} />}
             </div>
@@ -115,7 +130,7 @@ export default function Sidebar() {
             </button>
           </>
         ) : (
-          <button className="nav-btn" onClick={() => router.push(ROUTES.LOGIN)} style={{ color: "#58a6ff", borderColor: "rgba(88,166,255,0.2)", background: "rgba(88,166,255,0.1)" }}>
+          <button className="nav-btn" onClick={() => router.push(ROUTES.LOGIN)} style={{ color: "#58a6ff", borderColor: "rgba(88,166,255,0.2)", background: "rgba(88,166,255,0.1)", marginTop: "auto" }}>
             <GitHubIcon iconProps={{ sx: { fontSize: 20 } }} />
             <span className="hide-on-mobile" style={{ fontSize: "0.55rem", fontWeight: 800, textTransform: "uppercase" }}>Login</span>
           </button>
