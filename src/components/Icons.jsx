@@ -43,6 +43,7 @@ import {
   Map as MuiMap,
   Chat as MuiChat,
   Bolt as MuiBolt,
+  Description as MuiDescription,
 } from "@mui/icons-material";
 
 export const GitHubIcon = ({ iconProps = {} }) => <MuiGitHub {...iconProps} />;
@@ -89,3 +90,4 @@ export const RouteIcon = ({ iconProps = {} }) => <MuiRoute {...iconProps} />;
 export const MapIcon = ({ iconProps = {} }) => <MuiMap {...iconProps} />;
 export const ChatIcon = ({ iconProps = {} }) => <MuiChat {...iconProps} />;
 export const BoltIcon = ({ iconProps = {} }) => <MuiBolt {...iconProps} />;
+export const DescriptionIcon = ({ iconProps = {} }) => <MuiDescription {...iconProps} />;

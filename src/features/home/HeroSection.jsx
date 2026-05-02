@@ -2,11 +2,53 @@ import { useRouter } from "next/router";
 import { ROUTES, HOME_PAGE_CONFIG } from "@/constants";
 import { Box, Typography, Button, SearchIcon } from "@/components";
 
+const CTA_TOOLTIP_STYLES = `
+  .cta-wrapper { position: relative; display: inline-flex; }
+  .cta-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(22,27,34,0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.65);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateX(-50%) translateY(4px);
+    z-index: 10;
+  }
+  .cta-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(255,255,255,0.1);
+  }
+  .cta-wrapper:hover .cta-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+`;
+
 export default function HeroSection() {
   const router = useRouter();
   const { HERO_BADGE, HERO_TITLE, HERO_SUBTITLE, CTA_PRIMARY, CTA_SECONDARY } = HOME_PAGE_CONFIG;
 
   return (
+    <>
+      <style>{CTA_TOOLTIP_STYLES}</style>
     <Box boxProps={{ 
       component: "section",
       sx: {
@@ -93,54 +135,70 @@ export default function HeroSection() {
           className: "animate-fade-in-up delay-300",
           sx: { 
             display: "flex", 
+            flexWrap: "wrap",
             gap: "16px", 
             justifyContent: "center", 
             width: "100%",
             marginBottom: "64px"
           }
         }}>
-          <Button 
-            buttonProps={{
-              onClick: () => router.push(ROUTES.DISCOVER),
-              sx: {
-                padding: "12px 32px", 
-                borderRadius: "12px", 
-                background: "#fff",
-                color: "#0d1117", 
-                fontWeight: 600, 
-                fontSize: "1rem", 
-                border: "none",
-                "&:hover": {
-                  background: "#f0f0f0",
-                  transform: "translateY(-1px)"
-                },
-                transition: "all 0.2s ease"
-              }
-            }}
-          >
-            {CTA_PRIMARY}
-          </Button>
-          <Button 
-            buttonProps={{
-              onClick: () => router.push(ROUTES.ROADMAP),
-              sx: {
-                padding: "12px 32px", 
-                borderRadius: "12px", 
-                background: "rgba(255,255,255,0.05)",
-                color: "#fff", 
-                fontWeight: 600, 
-                fontSize: "1rem", 
-                border: "1px solid rgba(255,255,255,0.1)",
-                "&:hover": {
-                  background: "rgba(255,255,255,0.08)",
-                  borderColor: "rgba(255,255,255,0.2)"
-                },
-                transition: "all 0.2s ease"
-              }
-            }}
-          >
-            {CTA_SECONDARY}
-          </Button>
+          {/* Let's Explore with tooltip */}
+          <div className="cta-wrapper">
+            {/* <div className="cta-tooltip">
+              Find issues with high Match Scores<br />
+              tailored to your GitHub profile.
+            </div> */}
+            <Button 
+              buttonProps={{
+                onClick: () => router.push(ROUTES.DISCOVER),
+                sx: {
+                  padding: "12px 32px", 
+                  borderRadius: "12px", 
+                  background: "#fff",
+                  color: "#0d1117", 
+                  fontWeight: 600, 
+                  fontSize: "1rem", 
+                  border: "none",
+                  "&:hover": {
+                    background: "#f0f0f0",
+                    transform: "translateY(-1px)"
+                  },
+                  transition: "all 0.2s ease"
+                }
+              }}
+            >
+              {CTA_PRIMARY}
+            </Button>
+          </div>
+
+          {/* Meet Gibo AI with tooltip */}
+          <div className="cta-wrapper">
+            {/* <div className="cta-tooltip">
+              Chat with Gibo AI to understand<br />
+              codebases and get issue breakdowns.
+            </div> */}
+            <Button 
+              buttonProps={{
+                onClick: () => router.push(ROUTES.BLOGS),
+                sx: {
+                  padding: "12px 32px", 
+                  borderRadius: "12px", 
+                  background: "rgba(255,255,255,0.05)",
+                  color: "#fff", 
+                  fontWeight: 600, 
+                  fontSize: "1rem", 
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  "&:hover": {
+                    background: "rgba(255,255,255,0.08)",
+                    borderColor: "rgba(255,255,255,0.2)"
+                  },
+                  transition: "all 0.2s ease"
+                }
+              }}
+            >
+              {CTA_SECONDARY}
+            </Button>
+          </div>
         </Box>
 
         {/* Command Bar Mockup */}
@@ -183,5 +241,6 @@ export default function HeroSection() {
         </Box> */}
       </Box>
     </Box>
+    </>
   );
 }

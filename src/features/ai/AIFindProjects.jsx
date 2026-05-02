@@ -26,7 +26,7 @@ export default function AIFindProjects({ onResponse, onLoading, onError }) {
         `Repo: ${repo.full_name} | Stars: ${repo.stargazers_count} | Language: ${repo.language || "Unknown"} | Topics: ${(repo.topics || []).join(", ")}\nDesc: ${repo.description || "No description"}`
       ).join("\n\n");
 
-      // 2. Pass real data to Gibo for ranking and personalized advice
+      // 2. Pass real data to Patch for ranking and personalized advice
       const data = await findProjects({ 
         query: query.trim(),
         repoResults: repoSummaries 
@@ -42,13 +42,7 @@ export default function AIFindProjects({ onResponse, onLoading, onError }) {
   };
 
   return (
-    <div style={{
-      background: "linear-gradient(135deg, rgba(88,166,255,0.06), rgba(188,140,255,0.06))",
-      border: "1px solid rgba(88,166,255,0.15)",
-      borderRadius: 16,
-      padding: "18px",
-      marginBottom: 20,
-    }}>
+    <div style={{ marginBottom: 20 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <PsychologyIcon iconProps={{ sx: { fontSize: 18, color: "#bc8cff" } }} />
         <h3 style={{ margin: 0, fontSize: "0.9rem", fontWeight: 800, color: "#e6edf3" }}>

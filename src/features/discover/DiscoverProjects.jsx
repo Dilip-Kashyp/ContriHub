@@ -13,17 +13,17 @@ import {
   DISCOVER_LABELS, SORT_OPTIONS, MIN_STAR_OPTIONS, 
   LANGUAGE_COLORS, ROUTES 
 } from "@/constants";
-import AIButton from "@/features/ai/AIButton";
-import AIDrawer from "@/features/ai/AIDrawer";
-import AIFindProjects from "@/features/ai/AIFindProjects";
-import AIRoadmapGenerator from "@/features/ai/AIRoadmapGenerator";
-import { explainRepo, getStartGuide } from "@/helper";
+import RepoCard from "./components/RepoCard";
+import IssueCard from "./components/IssueCard";
+import { DISCOVER_STRINGS, TECH_KEYWORDS, TABS } from "@/constants/discover";
+import { extractUserInterests, calculateMatchScore } from "@/helper/discover";
+import { getChatHistory } from "@/helper/ai";
+import { apiClient } from "@/helper/apiClient";
 
 const { ERROR_TEXT, NO_PROJECTS_TEXT, NO_DESC_TEXT, ISSUES_LABEL, UPDATED_LABEL } = DISCOVER_PAGE_CONFIG;
 
 const ICON_MAP = { AutoAwesomeIcon, HelpIcon, ErrorIcon, ExploreIcon };
 
-// ── Responsive Styles ──────────────────────────────────────────────────────────
 const s = {
   page: { minHeight: "100vh", background: "transparent", padding: "80px 24px 40px" },
   headerBand: { marginBottom: 24 },
@@ -55,13 +55,17 @@ const s = {
     transform: active ? "translateY(-1px)" : "none",
     boxShadow: active ? `0 4px 12px ${color || "#58a6ff"}15` : "none"
   }),
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))", gap: 16 }
+  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))", gap: 16 },
+  tabsContainer: { display: "flex", gap: 8, marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: 16 }
 };
 
-import RepoCard from "./components/RepoCard";
+const TAB_ISSUES = "issues";
+const TAB_REPOS = "repositories";
 
 export default function DiscoverProjects() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState(TAB_ISSUES);
+  
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("good-first-issues:>0");
   const [selectedLangs, setSelectedLangs] = useState([]);
@@ -72,19 +76,39 @@ export default function DiscoverProjects() {
   const [page, setPage] = useState(1);
   const [mounted, setMounted] = useState(false);
 
-  // AI state
-  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
-  const [aiDrawerTitle, setAiDrawerTitle] = useState("Gibo Response");
-  const [aiResponse, setAiResponse] = useState("");
-  const [aiLoading, setAiLoading] = useState(null); // tracks which button is loading
-  const [aiError, setAiError] = useState(null);
+  const [issues, setIssues] = useState([]);
+  const [issuesLoading, setIssuesLoading] = useState(false);
+  const [issuesPage, setIssuesPage] = useState(1);
+  const [userInterests, setUserInterests] = useState([]);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    getChatHistory().then(data => {
+      if (data?.messages) {
+        setUserInterests(extractUserInterests(data.messages));
+      }
+    }).catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || activeTab !== TAB_ISSUES) return;
+    setIssuesLoading(true);
+    let q = `is:issue is:open label:"good first issue"`;
+    if (selectedLangs.length) q += ` ${selectedLangs.map(l => `language:${l}`).join(" ")}`;
+    if (selectedTopics.length) q += ` ${selectedTopics.map(t => `label:${t}`).join(" ")}`;
+    
+    const encodedQ = encodeURIComponent(q);
+    apiClient({ url: `/github/search/issues?q=${encodedQ}&sort=created&order=desc&per_page=20&page=${issuesPage}`, method: "GET" })
+      .then(data => setIssues(data?.items || []))
+      .catch(() => setIssues([]))
+      .finally(() => setIssuesLoading(false));
+  }, [mounted, activeTab, selectedLangs, selectedTopics, issuesPage]);
 
   const toggleFilter = (val, list, setList) => {
     if (list.includes(val)) setList(list.filter(item => item !== val));
     else setList([...list, val]);
     setPage(1);
+    setIssuesPage(1);
   };
 
   const buildFinalQuery = () => {
@@ -97,44 +121,7 @@ export default function DiscoverProjects() {
   };
 
   const finalQuery = buildFinalQuery();
-  const { data, error, isLoading } = useSWR(mounted ? `/discover?q=${encodeURIComponent(finalQuery)}&sort=${sort}&page=${page}` : null, () => searchRepositoriesHandler({ query: finalQuery, sort, order: "desc", page }));
-
-  const handleAskAI = async (repo) => {
-    setAiLoading(`explain-${repo.id}`);
-    setAiDrawerTitle(`Gibo: ${repo.full_name}`);
-    setAiDrawerOpen(true);
-    setAiResponse("");
-    setAiError(null);
-    try {
-      const res = await explainRepo({
-        repoName: repo.full_name,
-        description: repo.description || "",
-        language: repo.language || "",
-        topics: (repo.topics || []).join(", "),
-      });
-      setAiResponse(res.response);
-    } catch (err) {
-      setAiError(err.message || "Failed to get Gibo response");
-    } finally { setAiLoading(null); }
-  };
-
-  const handleStartGuide = async (repo) => {
-    setAiLoading(`start-${repo.id}`);
-    setAiDrawerTitle(`Start Guide: ${repo.full_name}`);
-    setAiDrawerOpen(true);
-    setAiResponse("");
-    setAiError(null);
-    try {
-      const res = await getStartGuide({
-        repoName: repo.full_name,
-        description: repo.description || "",
-        language: repo.language || "",
-      });
-      setAiResponse(res.response);
-    } catch (err) {
-      setAiError(err.message || "Failed to get start guide");
-    } finally { setAiLoading(null); }
-  };
+  const { data, error, isLoading } = useSWR(mounted && activeTab === TAB_REPOS ? `/discover?q=${encodeURIComponent(finalQuery)}&sort=${sort}&page=${page}` : null, () => searchRepositoriesHandler({ query: finalQuery, sort, order: "desc", page }));
 
   if (!mounted) return null;
 
@@ -145,6 +132,26 @@ export default function DiscoverProjects() {
           .discover-title { font-size: 1.6rem !important; }
           .discover-subtitle { font-size: 0.85rem !important; margin-bottom: 24px !important; }
         }
+        .discover-tab {
+          padding: 10px 20px;
+          border-radius: 99px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: transparent;
+          color: #8b949e;
+          border: 1px solid transparent;
+        }
+        .discover-tab.active {
+          background: rgba(88,166,255,0.1);
+          color: #58a6ff;
+          border-color: rgba(88,166,255,0.2);
+        }
+        .discover-tab:hover:not(.active) {
+          background: rgba(255,255,255,0.05);
+          color: #c9d1d9;
+        }
       `}</style>
       <div style={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
         <div style={{ minWidth: 0, width: "100%" }}>
@@ -152,23 +159,19 @@ export default function DiscoverProjects() {
             <h1 className="discover-title" style={{ fontSize: "2rem", fontWeight: 900, color: "#e6edf3", marginBottom: 8, letterSpacing: "-1px" }}>Discover <span style={{ background: "linear-gradient(135deg, #58a6ff, #bc8cff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Projects</span></h1>
             <p className="discover-subtitle" style={{ color: "#8b949e", marginBottom: 28, fontSize: "0.9rem" }}>Find the perfect open-source project to start your contribution journey.</p>
             
-            {/* Premium AI Tools Banner */}
-            <div className="bento-item" style={{ padding: "24px", marginBottom: "32px", background: "rgba(88, 166, 255, 0.05)", border: "1px solid rgba(88, 166, 255, 0.2)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                <AutoAwesomeIcon iconProps={{ sx: { color: "var(--accent-primary)", fontSize: 24 } }} />
-                <h2 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0, color: "#fff" }}>Gibo Project Suggester</h2>
-              </div>
-              <div style={{ maxWidth: "600px" }}>
-                <AIFindProjects 
-                  onResponse={(resp, title) => {
-                    setAiResponse(resp);
-                    setAiDrawerTitle(title);
-                    setAiDrawerOpen(true);
-                  }}
-                  onLoading={(l) => setAiLoading(l ? "finding" : null)}
-                  onError={(e) => setAiError(e)}
-                />
-              </div>
+            <div style={s.tabsContainer}>
+              <button 
+                className={`discover-tab ${activeTab === TAB_ISSUES ? 'active' : ''}`}
+                onClick={() => setActiveTab(TAB_ISSUES)}
+              >
+                Issues
+              </button>
+              <button 
+                className={`discover-tab ${activeTab === TAB_REPOS ? 'active' : ''}`}
+                onClick={() => setActiveTab(TAB_REPOS)}
+              >
+                Repositories
+              </button>
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); if (searchInput.trim()) { setQuery(searchInput.trim()); setPage(1); } }} style={s.searchRow}>
@@ -239,13 +242,39 @@ export default function DiscoverProjects() {
           </div>
 
           <div style={s.grid}>
-            {isLoading ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="bento-item" style={{ opacity: 0.5, height: 200, background: "#161b22" }} />) : 
-             error ? <div style={{ color: "#f85149", textAlign: "center", gridColumn: "1/-1" }}>{ERROR_TEXT}</div> :
-             data?.items?.length === 0 ? <div style={{ textAlign: "center", gridColumn: "1/-1", padding: 60 }}><ExploreIcon iconProps={{ sx: { fontSize: 48, color: "#30363d", mb: 2 } }} /><p style={{ fontSize: "1rem", color: "#8b949e" }}>{NO_PROJECTS_TEXT}</p></div> :
-             data?.items?.map(repo => <RepoCard key={repo.id} repo={repo} onAskAI={handleAskAI} onStartGuide={handleStartGuide} aiLoading={aiLoading} />)}
+            {activeTab === TAB_ISSUES && (
+              issuesLoading ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="bento-item" style={{ opacity: 0.5, height: 200, background: "#161b22" }} />) : 
+              issues.length === 0 ? <div style={{ textAlign: "center", gridColumn: "1/-1", padding: 60 }}><ExploreIcon iconProps={{ sx: { fontSize: 48, color: "#30363d", mb: 2 } }} /><p style={{ fontSize: "1rem", color: "#8b949e" }}>No issues found matching your filters.</p></div> :
+              issues.map(issue => (
+                <IssueCard 
+                  key={issue.id} 
+                  issue={issue} 
+                  matchScore={calculateMatchScore({ 
+                    language: issue.language, 
+                    topics: issue.labels?.map(l => l.name),
+                    description: issue.title + " " + (issue.body || "")
+                  }, userInterests)} 
+                />
+              ))
+            )}
+            
+            {activeTab === TAB_REPOS && (
+              isLoading ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="bento-item" style={{ opacity: 0.5, height: 200, background: "#161b22" }} />) : 
+              error ? <div style={{ color: "#f85149", textAlign: "center", gridColumn: "1/-1" }}>{ERROR_TEXT}</div> :
+              data?.items?.length === 0 ? <div style={{ textAlign: "center", gridColumn: "1/-1", padding: 60 }}><ExploreIcon iconProps={{ sx: { fontSize: 48, color: "#30363d", mb: 2 } }} /><p style={{ fontSize: "1rem", color: "#8b949e" }}>{NO_PROJECTS_TEXT}</p></div> :
+              data?.items?.map(repo => <RepoCard key={repo.id} repo={repo} matchScore={calculateMatchScore(repo, userInterests)} />)
+            )}
           </div>
 
-          {data?.items?.length > 0 && (
+          {activeTab === TAB_ISSUES && issues.length > 0 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 40 }}>
+              <button disabled={issuesPage === 1} onClick={() => setIssuesPage(p => p - 1)} style={{ padding: "10px 18px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)", background: "rgba(33,38,45,0.4)", color: "#e6edf3", cursor: "pointer", fontWeight: 700, fontSize: "0.8rem" }}>Previous</button>
+              <div style={{ padding: "10px 18px", background: "rgba(88,166,255,0.1)", color: "#58a6ff", borderRadius: 12, fontWeight: 800, minWidth: 48, textAlign: "center", fontSize: "0.85rem" }}>{issuesPage}</div>
+              <button onClick={() => setIssuesPage(p => p + 1)} style={{ padding: "10px 18px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)", background: "rgba(33,38,45,0.4)", color: "#e6edf3", cursor: "pointer", fontWeight: 700, fontSize: "0.8rem" }}>Next</button>
+            </div>
+          )}
+
+          {activeTab === TAB_REPOS && data?.items?.length > 0 && (
             <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 40 }}>
               <button disabled={page === 1} onClick={() => setPage(p => p - 1)} style={{ padding: "10px 18px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)", background: "rgba(33,38,45,0.4)", color: "#e6edf3", cursor: "pointer", fontWeight: 700, fontSize: "0.8rem" }}>Previous</button>
               <div style={{ padding: "10px 18px", background: "rgba(88,166,255,0.1)", color: "#58a6ff", borderRadius: 12, fontWeight: 800, minWidth: 48, textAlign: "center", fontSize: "0.85rem" }}>{page}</div>
@@ -255,8 +284,6 @@ export default function DiscoverProjects() {
         </div>
       </div>
 
-      {/* AI Drawer for repo-level actions */}
-      <AIDrawer open={aiDrawerOpen} onClose={() => setAiDrawerOpen(false)} title={aiDrawerTitle} response={aiResponse} loading={!!aiLoading} error={aiError} />
     </>
   );
 }

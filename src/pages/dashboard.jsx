@@ -1,10 +1,10 @@
 import Layout from "@/features/layout/Layout.jsx";
-import ProfileDashboard from "@/features/profile/ProfileDashboard";
+import DashboardPage from "@/features/dashboard/DashboardPage";
 
-export default function DashboardPage() {
+export default function DashboardRoute() {
   return (
     <Layout>
-      <ProfileDashboard />
+      <DashboardPage />
     </Layout>
   );
 }

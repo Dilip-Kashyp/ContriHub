@@ -15,6 +15,7 @@ export default function GeneralAIPage() {
   const [token, setToken] = useState(null);
   const [mounted, setMounted] = useState(false);
   const chatEndRef = useRef(null);
+  const lastAiMsgRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
@@ -38,7 +39,8 @@ export default function GeneralAIPage() {
       try {
         const data = await getChatHistory();
         if (data && data.messages) {
-          setMessages(data.messages);
+          // Intentionally NOT setting messages from history so it starts blank.
+          // setMessages(data.messages);
           
           // Check for query param 'q' to auto-send a message
           const urlParams = new URLSearchParams(window.location.search);
@@ -71,9 +73,16 @@ export default function GeneralAIPage() {
     fetchHistory();
   }, [token]);
 
-  // Scroll to bottom on new messages
+  // Scroll to top of last AI message on new AI response; scroll to bottom for loading
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (aiLoading) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else if (messages.length > 0 && messages[messages.length - 1]?.role === "ai") {
+      // Scroll so the top of the latest AI message is visible
+      lastAiMsgRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, aiLoading]);
 
   const handleAIMessage = async (message) => {
@@ -92,7 +101,7 @@ export default function GeneralAIPage() {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: "error", content: err.message || "Failed to get Gibo response" },
+        { role: "error", content: err.message || "Failed to get Gibo Response" },
       ]);
       if (err.message.includes("401")) {
         setTimeout(() => {
@@ -135,8 +144,8 @@ export default function GeneralAIPage() {
       .replace(/^### (.+)$/gm, '<h4 style="color:var(--accent-purple);font-size:0.9rem;margin:18px 0 8px;font-weight:800">$1</h4>')
       .replace(/^## (.+)$/gm, '<h3 style="color:var(--accent-primary);font-size:1.05rem;margin:22px 0 10px;font-weight:800">$1</h3>')
       .replace(/^# (.+)$/gm, '<h2 style="color:#fff;font-size:1.25rem;margin:24px 0 12px;font-weight:900">$1</h2>')
-      .replace(/^\d+\.\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:4px;font-size:0.85rem">$1</li>')
-      .replace(/^[-*]\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:4px;list-style:disc;font-size:0.85rem">$1</li>')
+      .replace(/^\d+\.\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:12px;font-size:0.85rem">$1</li>')
+      .replace(/^[-*]\s+(.+)$/gm, '<li style="margin:6px 0;padding-left:12px;list-style:disc;font-size:0.85rem">$1</li>')
       // Links
       .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:none;border-bottom:1px solid rgba(88,166,255,0.2);font-weight:600">$1</a>')
       .replace(/\n\n/g, '<div style="height:12px"></div>')
@@ -187,7 +196,8 @@ export default function GeneralAIPage() {
         width: "100%", 
         display: "flex", 
         flexDirection: "column",
-        height: "calc(100vh - 16px)", // Fill viewport minus Layout padding
+        height: "100%", // Fill viewport respecting Layout padding
+        flexGrow: 1,
       }}>
         
         {/* Header */}
@@ -219,7 +229,6 @@ export default function GeneralAIPage() {
               </div>
               <div style={{ textAlign: "center" }}>
                 <h3 style={{ margin: "0 0 6px", fontSize: "1rem", fontWeight: 800, color: "#e6edf3" }}>How can I help you today?</h3>
-                <p style={{ margin: 0, color: "#6e7681", fontSize: "0.78rem" }}>Chat history is automatically saved for 30 days.</p>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", maxWidth: 500 }}>
                 {suggestedQuestions.map((q) => (
@@ -240,15 +249,22 @@ export default function GeneralAIPage() {
             </div>
           )}
 
-          {!initialLoad && messages.map((msg, i) => (
-            <div key={i} className="chat-msg" style={{
-              display: "flex",
-              justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-              padding: "0 4px",
-            }}>
+          {!initialLoad && messages.map((msg, i) => {
+            const isLastAi = msg.role === "ai" && i === messages.length - 1;
+            return (
+            <div
+              key={i}
+              className="chat-msg"
+              ref={isLastAi ? lastAiMsgRef : null}
+              style={{
+                display: "flex",
+                justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                padding: "0 4px",
+              }}
+            >
               <div style={{
                 maxWidth: msg.role === "user" ? "75%" : "90%",
-                padding: msg.role === "user" ? "10px 14px" : "14px 16px",
+                padding: msg.role === "user" ? "10px 14px" : "20px 24px",
                 borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
                 background: msg.role === "user"
                   ? "var(--accent-primary)"
@@ -284,7 +300,8 @@ export default function GeneralAIPage() {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
 
           {aiLoading && (
             <div className="chat-msg" style={{ display: "flex", padding: "0 4px" }}>

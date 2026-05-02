@@ -1,15 +1,17 @@
+import { AI_STRINGS } from "./aiStrings";
+
 export const HOME_PAGE_CONFIG = {
-  HERO_BADGE: "ContriHub v1.0 • Now in Beta",
+  HERO_BADGE: "ContriHub v1.0 • The Zero-to-PR Pipeline",
   HERO_TITLE: ["Build your legacy in", "Open Source."],
-  HERO_SUBTITLE: "The command center for open source contributors. Discover beginner-friendly projects, generate AI-driven roadmaps, and scale your impact with precision.",
-  CTA_PRIMARY: "Let's Explore",
-  CTA_SECONDARY: "Plan your Learning Path",
-  FEATURES_TITLE: "Everything you need to contribute.",
-  FEATURES_SUBTITLE: "A complete suite of tools designed to move you from first commit to project maintainer.",
+  HERO_SUBTITLE: "Stop getting lost in massive codebases. Discover the right projects, let Gibo AI break down complex issues, and track your PRs to merge.",
+  CTA_PRIMARY: "Find Your First Issue",
+  CTA_SECONDARY: "Docs",
+  FEATURES_TITLE: "Bridging the gap between finding an issue and writing the code.",
+  FEATURES_SUBTITLE: "We don't just give you a list of issues. We give you the context, the exact files to edit, and the local setup steps to get it done.",
   BENTO_FEATURES: [
     {
-      title: "Gibo Command Center",
-      desc: "Our AI orchestrator that handles codebase analysis, issue discovery, and roadmap generation in one interface.",
+      title: AI_STRINGS.FEATURE_TITLE,
+      desc: AI_STRINGS.FEATURE_DESC,
       iconKey: "roadmap",
       span: 8,
       gradient: "linear-gradient(135deg, rgba(88, 166, 255, 0.05) 0%, transparent 100%)",
@@ -17,8 +19,8 @@ export const HOME_PAGE_CONFIG = {
       isPrimary: false
     },
     {
-      title: "Global Pulse",
-      desc: "Real-time activity tracking across the open source ecosystem. Stay synced with every repo you care about.",
+      title: "Contribution Pulse",
+      desc: "Real-time health scores for every repo. Know if a project is active, welcoming, and worth your time — before you commit.",
       iconKey: "pulse",
       span: 4,
       gradient: "linear-gradient(135deg, rgba(63, 185, 80, 0.05) 0%, transparent 100%)",
@@ -35,8 +37,8 @@ export const HOME_PAGE_CONFIG = {
       color: "#bc8cff"
     },
     {
-      title: "Intelligent Roadmaps",
-      desc: "Personalized learning paths that evolve with your skill level. Master any stack by contributing to real code.",
+      title: "Smart Issue Matching",
+      desc: AI_STRINGS.ISSUE_MATCH_DESC,
       iconKey: "roadmap",
       span: 8,
       gradient: "linear-gradient(135deg, rgba(210, 153, 34, 0.05) 0%, transparent 100%)",
