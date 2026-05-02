@@ -40,7 +40,7 @@ export default function Layout({ children }) {
           maxWidth: isLanding ? "100%" : "1300px",
           margin: "0 auto",
           width: "100%",
-          padding: isLanding ? 0 : { xs: "8px", md: "8px 24px" },
+          padding: isLanding ? 0 : { xs: "8px 8px 80px 8px", md: "8px 24px" },
           position: "relative",
           zIndex: 1,
           flexGrow: 1,

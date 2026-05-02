@@ -5,8 +5,9 @@ import { ROUTES } from "@/constants";
 import { LOCAL_STORAGE_KEY } from "@/constants/common";
 import { getUserProfileHandler, logoutHandler } from "@/helper";
 import { 
-  DashboardIcon, ExploreIcon, HomeIcon, LogoutIcon, GitHubIcon, SmartToyIcon, RouteIcon
-} from "@/components";
+  DashboardIcon, ExploreIcon, HomeIcon, LogoutIcon, GitHubIcon, SmartToyIcon, TrendingUpIcon,
+  DescriptionIcon
+ } from "@/components";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -22,11 +23,11 @@ export default function Sidebar() {
   const { data: user } = useSWR(token ? "/github/user" : null, getUserProfileHandler);
 
   const navItems = [
-    // { id: "home", label: "Home", path: ROUTES.HOME, icon: <HomeIcon iconProps={{ sx: { fontSize: 20 } }} /> },
-    { id: "overview", label: "Dash", path: ROUTES.DASHBOARD, icon: <DashboardIcon iconProps={{ sx: { fontSize: 20 } }} /> },
     { id: "explore", label: "Explore", path: ROUTES.DISCOVER, icon: <ExploreIcon iconProps={{ sx: { fontSize: 20 } }} /> },
-    { id: "roadmap", label: "Learning", path: ROUTES.ROADMAP, icon: <RouteIcon iconProps={{ sx: { fontSize: 20 } }} /> },
-    { id: "chat", label: "Gibo Chat", path: ROUTES.CHAT, icon: <SmartToyIcon iconProps={{ sx: { fontSize: 20 } }} /> },
+    { id: "trending", label: "Trending", path: ROUTES.TRENDING, icon: <TrendingUpIcon iconProps={{ sx: { fontSize: 20 } }} /> },
+    { id: "chat", label: "Gibo", path: ROUTES.CHAT, icon: <SmartToyIcon iconProps={{ sx: { fontSize: 20 } }} /> },
+    { id: "overview", label: "Dash", path: ROUTES.DASHBOARD, icon: <DashboardIcon iconProps={{ sx: { fontSize: 20 } }} /> },
+    // { id: "blogs", label: "Journal", path: ROUTES.BLOGS, icon: <DescriptionIcon iconProps={{ sx: { fontSize: 20 } }} /> },
   ];
 
   return (

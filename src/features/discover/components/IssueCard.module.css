@@ -1,0 +1,86 @@
+.issue-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.issue-card:hover {
+  border-color: rgba(63, 185, 80, 0.3);
+  transform: translateY(-2px);
+}
+
+.issue-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.issue-card-repo-name {
+  font-size: 0.65rem;
+  color: #58a6ff;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.issue-card-match-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(188, 140, 255, 0.12);
+  border: 1px solid rgba(188, 140, 255, 0.2);
+  font-size: 0.55rem;
+  color: #bc8cff;
+  font-weight: 800;
+}
+
+.issue-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #e6edf3;
+  line-height: 1.4;
+}
+
+.issue-card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.issue-card-label {
+  font-size: 0.6rem;
+  /* padding: 2px 7px; */
+  border-radius: 99px;
+  font-weight: 700;
+}
+
+.issue-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 8px;
+}
+
+.issue-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: #6e7681;
+}
+
+.issue-card-view-link {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  color: #3fb950;
+  font-weight: 700;
+}

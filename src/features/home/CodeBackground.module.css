@@ -1,0 +1,60 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+
+.mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+}
+
+.codeContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+  animation: scroll 60s linear infinite;
+}
+
+.codeLine {
+  font-family: 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  white-space: pre;
+  color: #58a6ff;
+  opacity: 0.25;
+  filter: drop-shadow(0 0 5px rgba(88, 166, 255, 0.3));
+}
+
+
+.codeLine:hover {
+  opacity: 0.8;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(88, 166, 255, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
